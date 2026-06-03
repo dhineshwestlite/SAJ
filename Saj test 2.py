@@ -115,7 +115,7 @@ def download_all_saj_bills(username, password):
             try:
                 update_history_btn = driver.find_elements(By.CSS_SELECTOR, "a.action.secondary.btn-payment-history")
                 if len(update_history_btn) > 0 and update_history_btn[0].is_displayed():
-                    print("⚠️ 'Update Payment History' button detected! Refreshing account data...")
+                    print("'Update Payment History' button detected! Refreshing account data...")
                     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", update_history_btn[0])
                     time.sleep(0.5)
                     update_history_btn[0].click()
@@ -127,7 +127,7 @@ def download_all_saj_bills(username, password):
                     )
                     time.sleep(3) 
                 else:
-                    print("✅ Account up to date. Proceeding directly.")
+                    print("Account up to date. Proceeding directly.")
             except Exception as update_err:
                 print(f"Note: Update check step bypassed or completed with warning: {update_err}")
 
