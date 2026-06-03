@@ -9,10 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
-# =========================================================================
-# 📝 YOUR BILL CODE TRANSLATION DICTIONARY
-# Add your mappings here: "SHORT_CODE_IN_PDF": "WEBSITE_BILLING_ID"
-# =========================================================================
+
 BILL_DATABASE_MAP = {
     "R26041": "81870595-L6099492",
     "R26042": "81927053-R5279646",
@@ -20,7 +17,6 @@ BILL_DATABASE_MAP = {
 }
 
 def run_shortcode_downloader():
-    # 1. Pop up a search box for the user
     root = tk.Tk()
     root.withdraw() 
     
@@ -33,12 +29,10 @@ def run_shortcode_downloader():
         print("No codes typed. Exiting script.")
         return
 
-    # Standardize the input array values
     requested_codes = [c.strip().upper() for c in user_input.replace(",", " ").split() if c.strip()]
     total_requested = len(requested_codes)
     print(f"User requested {total_requested} files from terminal entry box.")
 
-    # 2. Setup the silent download folder configuration
     download_folder = os.path.abspath("rapid_saj_downloads")
     if not os.path.exists(download_folder):
         os.makedirs(download_folder)
@@ -67,28 +61,23 @@ def run_shortcode_downloader():
         login_url = "https://www.ranhillsaj.com.my/customer/account/login/"
         driver.get(login_url)
         print("\n[ACTION]: Please complete system sign-in verification inside Chrome window...")
-        time.sleep(15) # Buffer time to clear manual input verification logs
+        time.sleep(15) 
 
         main_window_handle = driver.current_window_handle
         start_time = time.time()
 
-        # 4. Instant Download Router Engine
         for index, code in enumerate(requested_codes):
-            # Check if the text code typed exists inside our translation matrix
             if code not in BILL_DATABASE_MAP:
                 print(f"[{index+1}/{total_requested}] ❌ Warning: Code '{code}' missing from internal mapping layout dictionary database matrix. Skipping.")
                 continue
             
-            # Extract the raw system string needed by the address bar
             db_id = BILL_DATABASE_MAP[code]
             print(f"[{index+1}/{total_requested}] Matching '{code}' -> Routing directly to target ID: {db_id}...")
 
-            # Forge URL bypass link structure instantly bypassing front dashboard selectors completely
             direct_url = f"https://www.ranhillsaj.com.my/customer/account/?billingId={db_id}"
             driver.get(direct_url)
             time.sleep(2)
 
-            # Check for history updates seamlessly
             try:
                 update_btn = driver.find_elements(By.CSS_SELECTOR, "a.action.secondary.btn-payment-history")
                 if len(update_btn) > 0 and update_btn[0].is_displayed():
@@ -97,7 +86,6 @@ def run_shortcode_downloader():
             except:
                 pass
 
-            # Target view statement and click
             view_bill_xpath = "//input[@type='submit' and (@value='View Bill' or @name='View Bill')]"
             try:
                 view_bill_btn = WebDriverWait(driver, 10).until(
@@ -105,8 +93,7 @@ def run_shortcode_downloader():
                 )
                 driver.execute_script("arguments[0].click();", view_bill_btn)
                 time.sleep(2)
-
-                # Tab printer handler execution
+                
                 all_windows = driver.window_handles
                 if len(all_windows) > 1:
                     driver.switch_to.window(all_windows[1])
