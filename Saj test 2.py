@@ -70,11 +70,9 @@ def download_all_saj_bills(username, password):
 
         main_window_handle = driver.current_window_handle
 
-        # 3. Main Automation Loop
         for i in range(total_accounts):
             print(f"\nProcessing bill [{i+1}/{total_accounts}]...")
             
-            # Reset window focus at start of iteration
             try:
                 driver.switch_to.window(main_window_handle)
             except Exception:
@@ -82,7 +80,6 @@ def download_all_saj_bills(username, password):
                     driver.switch_to.window(driver.window_handles[0])
                     main_window_handle = driver.current_window_handle
 
-            # Ensure dropdown menu is expanded and visible
             account_radios = driver.find_elements(By.NAME, "bill_account_id")
             if len(account_radios) == 0 or not account_radios[0].is_displayed():
                 try:
@@ -99,13 +96,11 @@ def download_all_saj_bills(username, password):
             account_value = current_radio.get_attribute("value")
             print(f"Selecting account value: {account_value}")
             
-            # --- ARMORED RADIO SELECTION FIX ---
             try:
-                # Force choice injection into the DOM layer bypassing layout elements blocking click
                 driver.execute_script("arguments[0].click();", current_radio)
             except Exception as radio_err:
                 print(f"JS Selection override applied due to layout friction: {radio_err}")
-                current_radio.click() # Native fallback if script click behaves unexpectedly
+                current_radio.click()
             time.sleep(0.5)
 
             view_account_btn = WebDriverWait(driver, 10).until(
@@ -116,7 +111,6 @@ def download_all_saj_bills(username, password):
             print("Waiting for page container data to refresh...")
             time.sleep(3) 
 
-            # Check for history update requirements
             did_update = False
             try:
                 update_history_btn = driver.find_elements(By.CSS_SELECTOR, "a.action.secondary.btn-payment-history")
@@ -137,7 +131,6 @@ def download_all_saj_bills(username, password):
             except Exception as update_err:
                 print(f"Note: Update check step bypassed or completed with warning: {update_err}")
 
-            # Lookup for final print trigger
             print("Locating final 'View Bill' trigger...")
             view_bill_xpath = "//input[@type='submit' and (@value='View Bill' or @name='View Bill')]"
             
@@ -175,7 +168,6 @@ def download_all_saj_bills(username, password):
                 print("Trigger button returned null reference layout. Skipping.")
                 continue
 
-            # --- PRINT HANDLING SECTION ---
             try:
                 all_windows = driver.window_handles
                 if len(all_windows) > 1:
@@ -194,7 +186,7 @@ def download_all_saj_bills(username, password):
                         driver.close()
             
             except Exception as print_error:
-                print(f"⚠️ Notice: Print window frame state fluctuated on this item ({print_error}).")
+                print(f" Notice: Print window frame state fluctuated on this item ({print_error}).")
                 time.sleep(2)
             
             finally:
